@@ -182,6 +182,9 @@ class RavenHandler extends AbstractProcessingHandler
         if (isset($record['context']['exception']) && ($record['context']['exception'] instanceof \Exception || (PHP_VERSION_ID >= 70000 && $record['context']['exception'] instanceof \Throwable))) {
             $options['extra']['message'] = $record['formatted'];
             $this->ravenClient->captureException($record['context']['exception'], $options);
+        } elseif (isset($record['context']['error']) && ($record['context']['error'] instanceof \Exception || (PHP_VERSION_ID >= 70000 && $record['context']['error'] instanceof \Throwable))) {
+            $options['extra']['message'] = $record['formatted'];
+            $this->ravenClient->captureException($record['context']['error'], $options);
         } else {
             $this->ravenClient->captureMessage($record['formatted'], array(), $options);
         }

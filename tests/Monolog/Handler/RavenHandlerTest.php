@@ -11,9 +11,9 @@
 
 namespace Monolog\Handler;
 
-use Monolog\TestCase;
-use Monolog\Logger;
 use Monolog\Formatter\LineFormatter;
+use Monolog\Logger;
+use Monolog\TestCase;
 
 class RavenHandlerTest extends TestCase
 {
@@ -27,7 +27,7 @@ class RavenHandlerTest extends TestCase
     }
 
     /**
-     * @covers Monolog\Handler\RavenHandler::__construct
+     * @covers \Monolog\Handler\RavenHandler::__construct
      */
     public function testConstruct()
     {
@@ -157,6 +157,24 @@ class RavenHandlerTest extends TestCase
             $this->methodThatThrowsAnException();
         } catch (\Exception $e) {
             $record = $this->getRecord(Logger::ERROR, $e->getMessage(), array('exception' => $e));
+            $handler->handle($record);
+        }
+
+        $this->assertEquals($record['message'], $ravenClient->lastData['message']);
+    }
+
+    /**
+     * @requires PHP 7.0
+     */
+    public function testError()
+    {
+        $ravenClient = $this->getRavenClient();
+        $handler = $this->getHandler($ravenClient);
+
+        try {
+            $this->methodThatThrowsAnException();
+        } catch (\Exception $e) {
+            $record = $this->getRecord(Logger::ERROR, $e->getMessage(), array('error' => $e));
             $handler->handle($record);
         }
 
